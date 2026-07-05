@@ -1,7 +1,7 @@
 import NextAuth from 'next-auth'
 import DiscordProvider from 'next-auth/providers/discord'
 
-export const authOptions = {
+const handler = NextAuth({
   providers: [
     DiscordProvider({
       clientId: process.env.DISCORD_CLIENT_ID,
@@ -9,25 +9,24 @@ export const authOptions = {
       authorization: 'https://discord.com/api/oauth2/authorize?scope=identify+guilds',
     }),
   ],
+  session: {
+    strategy: 'jwt',
+    maxAge: 30 * 24 * 60 * 60,
+  },
   callbacks: {
-    async jwt({ token, account }) {
+    jwt: async function({ token, account }) {
       if (account) {
         token.accessToken = account.access_token
         token.tokenType = account.token_type
       }
       return token
     },
-    async session({ session, token }) {
+    session: async function({ session, token }) {
       session.accessToken = token.accessToken
       return session
     },
   },
-  session: {
-    strategy: 'jwt',
-  },
   secret: process.env.NEXTAUTH_SECRET,
-}
-
-const handler = NextAuth(authOptions)
+})
 
 export { handler as GET, handler as POST }
