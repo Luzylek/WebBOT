@@ -4,20 +4,25 @@ import { useSession, signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { LogOut, Settings, ChevronRight, Server } from 'lucide-react'
+import { LogOut, ChevronRight, Server } from 'lucide-react'
 
 export default function DashboardPage() {
-  const session_data = useSession()
-  const session = session_data?.data
-  const status = session_data?.status || 'loading'
+  const sessionData = useSession()
   const router = useRouter()
   const [guilds, setGuilds] = useState([])
   const [loading, setLoading] = useState(true)
 
+  const status = sessionData?.status || 'loading'
+  const session = sessionData?.data || null
+
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/login')
-    } else if (status === 'authenticated' && session?.accessToken) {
+    }
+  }, [status, router])
+
+  useEffect(() => {
+    if (status === 'authenticated' && session?.accessToken) {
       fetchGuilds()
     }
   }, [status, session])
@@ -42,19 +47,25 @@ export default function DashboardPage() {
     }
   }
 
-  if (status === 'loading' || (status === 'authenticated' && loading)) {
+  if (status === 'loading') {
     return (
       <main className="min-h-screen bg-nyxora-darker flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-400">Loading dashboard...</p>
+          <p className="text-gray-400">Loading...</p>
         </div>
       </main>
     )
   }
 
-  if (status === 'unauthenticated') {
-    return null
+  if (status === 'unauthenticated' || !session) {
+    return (
+      <main className="min-h-screen bg-nyxora-darker flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-400">Redirecting to login...</p>
+        </div>
+      </main>
+    )
   }
 
   return (
@@ -62,28 +73,24 @@ export default function DashboardPage() {
       
       <nav className="fixed top-0 w-full z-50 glass">
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <a href="/" className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl gradient-bg flex items-center justify-center">
-                <span className="text-2xl">🌌</span>
-              </div>
-              <span className="text-2xl font-bold gradient-text">Nyxora</span>
-            </a>
-          </div>
+          <a href="/" className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl gradient-bg flex items-center justify-center">
+              <span className="text-2xl">🌌</span>
+            </div>
+            <span className="text-2xl font-bold gradient-text">Nyxora</span>
+          </a>
           
           <div className="flex items-center gap-4">
-            {session?.user && (
-              <div className="flex items-center gap-3">
-                {session.user.image && (
-                  <img 
-                    src={session.user.image} 
-                    alt={session.user.name}
-                    className="w-10 h-10 rounded-full"
-                  />
-                )}
-                <span className="text-gray-300 hidden md:block">{session.user.name}</span>
-              </div>
-            )}
+            <div className="flex items-center gap-3">
+              {session.user?.image && (
+                <img 
+                  src={session.user.image} 
+                  alt="avatar"
+                  className="w-10 h-10 rounded-full"
+                />
+              )}
+              <span className="text-gray-300 hidden md:block">{session.user?.name || 'User'}</span>
+            </div>
             
             <button
               onClick={() => signOut({ callbackUrl: '/' })}
@@ -111,7 +118,12 @@ export default function DashboardPage() {
             </p>
           </motion.div>
 
-          {guilds.length === 0 ? (
+          {loading ? (
+            <div className="text-center py-20">
+              <div className="w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+              <p className="text-gray-400">Fetching your servers...</p>
+            </div>
+          ) : guilds.length === 0 ? (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -120,11 +132,11 @@ export default function DashboardPage() {
               <Server className="w-16 h-16 mx-auto mb-4 text-gray-500" />
               <h2 className="text-2xl font-bold mb-2">No servers found</h2>
               <p className="text-gray-400 mb-6">
-                You don&apos;t have admin permissions on any servers with Nyxora
+                You don&apos;t have admin permissions on any servers
               </p>
               <a 
                 href="https://discord.com/oauth2/authorize?client_id=1522992584732184756&permissions=8&scope=bot"
-                className="px-6 py-3 gradient-bg rounded-full font-semibold hover:scale-105 transition"
+                className="px-6 py-3 gradient-bg rounded-full font-semibold hover:scale-105 transition inline-block"
               >
                 Invite Nyxora
               </a>
@@ -139,7 +151,7 @@ export default function DashboardPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.05 }}
                   whileHover={{ scale: 1.02 }}
-                  className="glass rounded-2xl p-6 hover:border-purple-500 transition group"
+                  className="glass rounded-2xl p-6 hover:border-purple-500 transition group block"
                 >
                   <div className="flex items-center gap-4">
                     {guild.icon ? (
@@ -151,7 +163,7 @@ export default function DashboardPage() {
                     ) : (
                       <div className="w-16 h-16 rounded-xl gradient-bg flex items-center justify-center">
                         <span className="text-2xl font-bold">
-                          {guild.name.charAt(0).toUpperCase()}
+                          {guild.name?.charAt(0)?.toUpperCase() || '?'}
                         </span>
                       </div>
                     )}
