@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<!-- saved from url=(0049)https://good-parks-chew.freebuff.dev//nyxora.html -->
+<html lang="pl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nyxora — Nowoczesny Bot Discord</title>
+  <script src="./Nyxora — Nowoczesny Bot Discord_files/saved_resource"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com/">
+  <link href="./Nyxora — Nowoczesny Bot Discord_files/css2" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-primary: #0a0a0a;
+      --bg-secondary: #111;
+      --bg-surface: #181818;
+      --bg-elevated: #1f1f1f;
+      --bg-hover: #262626;
+      --border-subtle: rgba(255, 255, 255, 0.06);
+      --border-muted: rgba(255, 255, 255, 0.10);
+      --text-primary: #f5f5f5;
+      --text-secondary: #a0a0a0;
+      --text-tertiary: #666;
+      --accent: #8b5cf6;
+      --accent-dim: rgba(139, 92, 246, 0.12);
+      --accent-glow: rgba(139, 92, 246, 0.08);
+      --discord: #5865F2;
+      --status-online: #22c55e;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --transition: 200ms cubic-bezier(0.25, 0.1, 0.25, 1);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    html, body { height: 100%; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+    }
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 99px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.15); }
+
+    .page { display: none; }
+    .page.active { display: block; animation: fadeIn 400ms ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Navbar */
+    .navbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 32px;
+      background: rgba(10,10,10,0.85); backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .navbar-brand { display: flex; align-items: center; gap: 10px; font-size: 16px; font-weight: 600; color: var(--text-primary); }
+    .navbar-logo { width: 30px; height: 30px; border-radius: var(--radius-sm); background: var(--accent-dim); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; color: var(--accent); }
+    .navbar-links { display: flex; align-items: center; gap: 24px; }
+    .navbar-links a { font-size: 13px; color: var(--text-secondary); text-decoration: none; transition: color var(--transition); cursor: pointer; }
+    .navbar-links a:hover { color: var(--text-primary); }
+    .navbar-actions { display: flex; align-items: center; gap: 10px; }
+
+    /* Hero */
+    .hero {
+      min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 120px 32px 80px; text-align: center; position: relative; overflow: hidden;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 6px; padding: 5px 14px; border-radius: 99px;
+      background: var(--accent-dim); border: 1px solid rgba(139,92,246,0.2);
+      font-size: 12px; font-weight: 500; color: var(--accent); margin-bottom: 24px;
+    }
+    .hero-badge-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--status-online); }
+    .hero h1 { font-size: clamp(40px, 8vw, 72px); font-weight: 700; letter-spacing: -0.03em; line-height: 1.08; margin-bottom: 20px; }
+    .hero h1 span { background: linear-gradient(135deg, var(--accent) 0%, #a78bfa 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero p { font-size: 17px; color: var(--text-secondary); max-width: 560px; line-height: 1.6; margin-bottom: 36px; }
+    .hero-stats { display: flex; gap: 40px; margin-top: 60px; padding-top: 40px; border-top: 1px solid var(--border-subtle); flex-wrap: wrap; justify-content: center; }
+    .hero-stat { text-align: center; }
+    .hero-stat-value { font-size: 24px; font-weight: 600; letter-spacing: -0.02em; color: var(--text-primary); }
+    .hero-stat-label { font-size: 12px; color: var(--text-tertiary); margin-top: 2px; }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px; padding: 10px 22px;
+      border-radius: var(--radius-sm); font-size: 13px; font-weight: 500;
+      border: none; cursor: pointer; text-decoration: none; font-family: inherit;
+      transition: background var(--transition), color var(--transition), box-shadow var(--transition), border-color var(--transition);
+    }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: #7c3aed; box-shadow: 0 0 24px var(--accent-glow); }
+    .btn-secondary { background: var(--bg-elevated); color: var(--text-secondary); border: 1px solid var(--border-subtle); }
+    .btn-secondary:hover { background: var(--bg-hover); color: var(--text-primary); border-color: var(--border-muted); }
+    .btn-sm { padding: 7px 14px; font-size: 12px; }
+    .btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+    a.btn { text-decoration: none; }
+
+    /* Features */
+    .features { padding: 100px 32px; max-width: 1120px; margin: 0 auto; }
+    .features-header { text-align: center; margin-bottom: 60px; }
+    .features-header h2 { font-size: 30px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 12px; }
+    .features-header p { font-size: 14px; color: var(--text-tertiary); max-width: 480px; margin: 0 auto; line-height: 1.6; }
+    .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .feature-card { background: var(--bg-secondary); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 28px 26px; transition: border-color var(--transition), background var(--transition); }
+    .feature-card:hover { border-color: var(--border-muted); background: var(--bg-surface); }
+    .feature-icon { width: 40px; height: 40px; border-radius: var(--radius-sm); background: var(--accent-dim); display: flex; align-items: center; justify-content: center; color: var(--accent); margin-bottom: 16px; }
+    .feature-icon svg { width: 20px; height: 20px; }
+    .feature-title { font-size: 15px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px; }
+    .feature-desc { font-size: 13px; color: var(--text-tertiary); line-height: 1.6; }
+    .section-divider { height: 1px; background: var(--border-subtle); max-width: 1120px; margin: 0 auto; }
+
+    /* CTA */
+    .cta-section { padding: 100px 32px; text-align: center; max-width: 640px; margin: 0 auto; }
+    .cta-section h2 { font-size: 28px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 12px; }
+    .cta-section p { font-size: 14px; color: var(--text-tertiary); margin-bottom: 28px; line-height: 1.6; }
+    .landing-footer { text-align: center; padding: 32px; border-top: 1px solid var(--border-subtle); font-size: 12px; color: var(--text-tertiary); }
+
+    /* Login card */
+    .login-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 32px; }
+    .login-card { width: 100%; max-width: 400px; background: var(--bg-secondary); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 40px 36px 32px; }
+    .login-header { text-align: center; margin-bottom: 32px; }
+    .login-logo { width: 48px; height: 48px; border-radius: var(--radius-sm); background: var(--accent-dim); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 20px; color: var(--accent); margin: 0 auto 16px; }
+    .login-header h2 { font-size: 18px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 6px; }
+    .login-header p { font-size: 13px; color: var(--text-tertiary); }
+    .login-divider { display: flex; align-items: center; gap: 12px; color: var(--text-tertiary); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .login-divider::before, .login-divider::after { content: ''; flex: 1; height: 1px; background: var(--border-subtle); }
+    .login-error { font-size: 12px; color: #ef4444; text-align: center; display: none; }
+    .login-footer-text { text-align: center; font-size: 11px; color: var(--text-tertiary); margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border-subtle); line-height: 1.6; }
+
+    /* Dashboard */
+    .dashboard { display: grid; grid-template-columns: 240px 1fr; grid-template-rows: 60px 1fr; height: 100vh; overflow: hidden; }
+    .sidebar { grid-row: 1 / -1; background: var(--bg-secondary); border-right: 1px solid var(--border-subtle); display: flex; flex-direction: column; overflow-y: auto; }
+    .sidebar-header { padding: 20px 20px 18px; border-bottom: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: space-between; }
+    .sidebar-header-left { display: flex; align-items: center; gap: 10px; }
+    .sidebar-logo { width: 32px; height: 32px; border-radius: var(--radius-sm); background: var(--accent-dim); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; color: var(--accent); flex-shrink: 0; }
+    .sidebar-brand { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
+    .sidebar-brand span { color: var(--text-tertiary); font-weight: 400; }
+    .sidebar-nav { flex: 1; padding: 12px 10px; }
+    .nav-label { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-tertiary); padding: 16px 10px 6px; }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 400; color: var(--text-secondary); cursor: pointer; transition: background var(--transition), color var(--transition); text-decoration: none; }
+    .nav-item:hover { background: var(--bg-hover); color: var(--text-primary); }
+    .nav-item.active { background: var(--accent-dim); color: var(--accent); font-weight: 500; }
+    .nav-item svg { width: 18px; height: 18px; opacity: 0.6; flex-shrink: 0; }
+    .nav-item.active svg { opacity: 1; }
+    .sidebar-footer { padding: 14px 12px; border-top: 1px solid var(--border-subtle); display: flex; align-items: center; gap: 10px; }
+    .user-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #6b7280, #4b5563); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; color: #fff; }
+    .user-info { flex: 1; min-width: 0; }
+    .user-name { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .user-status { font-size: 11px; color: var(--text-tertiary); }
+
+    .header { background: var(--bg-secondary); border-bottom: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: space-between; padding: 0 28px; }
+    .header-left { display: flex; align-items: center; gap: 12px; }
+    .header-server { font-size: 14px; font-weight: 500; }
+    .header-breadcrumb { font-size: 12px; color: var(--text-tertiary); display: flex; align-items: center; gap: 6px; }
+    .header-breadcrumb svg { width: 14px; height: 14px; }
+    .header-right { display: flex; align-items: center; gap: 16px; }
+    .status-indicator { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--text-secondary); }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--status-online); box-shadow: 0 0 6px rgba(34,197,94,0.4); }
+    .status-ping { color: var(--text-tertiary); }
+    .header-actions { display: flex; gap: 6px; }
+    .header-btn { width: 32px; height: 32px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); background: transparent; color: var(--text-tertiary); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background var(--transition), border-color var(--transition); }
+    .header-btn:hover { background: var(--bg-hover); color: var(--text-primary); border-color: var(--border-muted); }
+    .header-btn svg { width: 16px; height: 16px; }
+
+    .main { background: var(--bg-primary); padding: 28px; overflow-y: auto; display: flex; flex-direction: column; gap: 28px; }
+    .page-heading { display: flex; align-items: center; justify-content: space-between; }
+    .page-heading h1 { font-size: 20px; font-weight: 600; letter-spacing: -0.02em; }
+    .page-heading p { font-size: 13px; color: var(--text-tertiary); margin-top: 2px; }
+    .page-heading-actions { display: flex; gap: 8px; }
+
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .stat-card { background: var(--bg-secondary); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 20px 22px; transition: border-color var(--transition), background var(--transition); }
+    .stat-card:hover { border-color: var(--border-muted); background: var(--bg-surface); }
+    .stat-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .stat-label { font-size: 12px; font-weight: 500; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.04em; }
+    .stat-icon { width: 30px; height: 30px; border-radius: var(--radius-sm); background: var(--bg-elevated); display: flex; align-items: center; justify-content: center; color: var(--text-tertiary); }
+    .stat-icon svg { width: 15px; height: 15px; }
+    .stat-value { font-size: 28px; font-weight: 600; letter-spacing: -0.03em; line-height: 1.1; }
+    .stat-change { font-size: 12px; font-weight: 500; color: var(--status-online); margin-top: 4px; }
+
+    .section { background: var(--bg-secondary); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 24px 28px; }
+    .section-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+    .section-desc { font-size: 12px; color: var(--text-tertiary); margin-bottom: 20px; }
+
+    .toggles-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .toggle-card { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); }
+    .toggle-card:hover { border-color: var(--border-muted); }
+    .toggle-info { display: flex; flex-direction: column; gap: 2px; }
+    .toggle-label { font-size: 13px; font-weight: 500; }
+    .toggle-desc { font-size: 11px; color: var(--text-tertiary); }
+    .toggle { position: relative; width: 36px; height: 20px; flex-shrink: 0; cursor: pointer; }
+    .toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
+    .toggle-slider { position: absolute; inset: 0; background: var(--bg-hover); border-radius: 99px; transition: background var(--transition); border: 1px solid var(--border-subtle); }
+    .toggle-slider::after { content: ''; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; background: var(--text-tertiary); border-radius: 50%; transition: transform var(--transition), background var(--transition); }
+    .toggle input:checked + .toggle-slider { background: var(--accent-dim); border-color: var(--accent); }
+    .toggle input:checked + .toggle-slider::after { transform: translateX(16px); background: var(--accent); }
+
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .form-group { display: flex; flex-direction: column; gap: 5px; }
+    .form-group.full-width { grid-column: 1 / -1; }
+    .form-label { font-size: 12px; font-weight: 500; color: var(--text-secondary); }
+    .form-input, .form-select, .form-textarea { background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 9px 12px; font-size: 13px; font-family: inherit; color: var(--text-primary); outline: none; transition: border-color var(--transition), background var(--transition); }
+    .form-input::placeholder, .form-textarea::placeholder { color: var(--text-tertiary); }
+    .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--accent); background: var(--bg-elevated); }
+    .form-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m3 5 3 3 3-3'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 32px; cursor: pointer; }
+    .form-select option { background: var(--bg-elevated); color: var(--text-primary); }
+    .form-textarea { resize: vertical; min-height: 80px; }
+    .form-actions { grid-column: 1 / -1; display: flex; justify-content: flex-end; gap: 8px; padding-top: 4px; }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: flex; flex-direction: column; gap: inherit; }
+    .mobile-toggle { display: none; background: none; border: none; color: var(--text-secondary); cursor: pointer; padding: 4px; }
+    .mobile-toggle svg { width: 20px; height: 20px; }
+
+    /* Toast */
+    .toast { position: fixed; bottom: 24px; right: 24px; background: #1f1f1f; color: #f5f5f5; padding: 10px 18px; border-radius: 8px; font-size: 13px; border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 8px 24px rgba(0,0,0,0.5); z-index: 999; opacity: 0; transform: translateY(8px); transition: opacity 250ms ease, transform 250ms ease; pointer-events: none; }
+    .toast.visible { opacity: 1; transform: translateY(0); }
+
+    /* Scroll indicator */
+    .scroll-indicator { position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 6px; color: var(--text-tertiary); font-size: 11px; animation: float 2s ease-in-out infinite; }
+    .scroll-indicator svg { width: 18px; height: 18px; }
+    @keyframes float { 0%, 100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(6px); } }
+
+    /* Responsive */
+    @media (max-width: 1024px) { .features-grid { grid-template-columns: repeat(2, 1fr); } .stats-grid { grid-template-columns: repeat(2, 1fr); } .toggles-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 768px) {
+      .navbar { padding: 14px 16px; } .navbar-links { display: none; } .hero { padding: 100px 20px 60px; } .hero-stats { gap: 24px; }
+      .features { padding: 60px 20px; } .features-grid { grid-template-columns: 1fr; } .cta-section { padding: 60px 20px; }
+      .dashboard { grid-template-columns: 1fr; grid-template-rows: auto 60px 1fr; } .sidebar { grid-row: 1; display: none; }
+      .sidebar.open { display: flex; position: fixed; inset: 0; z-index: 50; border-right: none; } .header { padding: 0 16px; }
+      .main { padding: 20px 16px; gap: 20px; } .stats-grid { grid-template-columns: 1fr 1fr; } .toggles-grid { grid-template-columns: 1fr; }
+      .form-grid { grid-template-columns: 1fr; } .form-group.full-width { grid-column: 1; } .form-actions { flex-direction: column; }
+      .form-actions .btn { width: 100%; justify-content: center; } .mobile-toggle { display: flex; }
+      .page-heading { flex-direction: column; align-items: flex-start; gap: 12px; }
+    }
+    @media (max-width: 480px) { .stats-grid { grid-template-columns: 1fr; } .header-right .header-actions { display: none; } .login-card { padding: 28px 20px 24px; } }
+  </style>
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}</style></head>
+<body>
+
+  <!-- ===== LANDING PAGE ===== -->
+  <div class="page active" id="page-landing">
+    <nav class="navbar">
+      <div class="navbar-brand"><div class="navbar-logo">N</div>Nyxora</div>
+      <div class="navbar-links">
+        <a onclick="scrollTo(&#39;features&#39;)">Funkcje</a>
+        <a onclick="scrollTo(&#39;cta&#39;)">Możliwości</a>
+        <a href="https://good-parks-chew.freebuff.dev/auth">Zaloguj się</a>
+      </div>
+      <div class="navbar-actions">
+        <a href="https://good-parks-chew.freebuff.dev/auth" class="btn btn-secondary btn-sm">Zaloguj się</a>
+        <a href="https://good-parks-chew.freebuff.dev/auth" class="btn btn-primary btn-sm">Rozpocznij</a>
+      </div>
+    </nav>
+
+    <section class="hero">
+      <div class="hero-badge"><span class="hero-badge-dot"></span>Online · 142 serwery</div>
+      <h1>Nowoczesny bot<br><span>dla Twojego Discorda</span></h1>
+      <p>Nyxora to zaawansowany, wielofunkcyjny bot Discord z modułami moderacji, muzyki, poziomów, ekonomii i powitań. W pełni konfigurowalny i gotowy do działania.</p>
+      <div class="hero-actions">
+        <a href="https://good-parks-chew.freebuff.dev/auth" class="btn btn-primary">
+          Logowanie przez Discord
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+        </a>
+        <button class="btn btn-secondary" onclick="scrollTo(&#39;features&#39;)">Poznaj funkcje</button>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat"><div class="hero-stat-value">142</div><div class="hero-stat-label">Serwery</div></div>
+        <div class="hero-stat"><div class="hero-stat-value">48,2k</div><div class="hero-stat-label">Użytkowników</div></div>
+        <div class="hero-stat"><div class="hero-stat-value">99.9%</div><div class="hero-stat-label">Uptime</div></div>
+        <div class="hero-stat"><div class="hero-stat-value">&lt;20ms</div><div class="hero-stat-label">Ping</div></div>
+      </div>
+      <div class="scroll-indicator">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg>
+        <span>Dowiedz się więcej</span>
+      </div>
+    </section>
+
+    <div class="section-divider" id="features"></div>
+
+    <section class="features">
+      <div class="features-header">
+        <h2>Co oferuje Nyxora?</h2>
+        <p>Kompletny zestaw narzędzi do zarządzania i ulepszania Twojego serwera Discord.</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg></div>
+          <div class="feature-title">Moderacja</div>
+          <div class="feature-desc">Zaawansowany system anty-link, filtr przekleństw, auto-moderacja, zarządzanie warningami i banami.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg></div>
+          <div class="feature-title">Muzyka</div>
+          <div class="feature-desc">Odtwarzanie z YouTube, Spotify i SoundCloud. Kolejki, playlisty i filtry dźwięku.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20h20"></path><path d="M5 20V8l7-5 7 5v12"></path><circle cx="12" cy="12" r="3"></circle></svg></div>
+          <div class="feature-title">System Poziomów</div>
+          <div class="feature-desc">Automatyczne rangi i exp za aktywność. Użytkownicy awansują i odblokowują role.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path><path d="M12 18V6"></path></svg></div>
+          <div class="feature-title">Ekonomia</div>
+          <div class="feature-desc">Wirtualna waluta, codzienne nagrody, sklep i transfery między użytkownikami.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"></path><path d="M8 17s2 2 4 2 4-2 4-2"></path></svg></div>
+          <div class="feature-title">Powitania</div>
+          <div class="feature-desc">Personalizowane wiadomości powitalne, kanały powitalne, embed z avatarami i auto-role.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></div>
+          <div class="feature-title">Konfiguracja</div>
+          <div class="feature-desc">Intuicyjny panel dashboard, zmiana prefixu, zarządzanie modułami i logi aktywności.</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-divider" id="cta"></div>
+
+    <section class="cta-section">
+      <h2>Gotowy, by usprawnić swój serwer?</h2>
+      <p>Dołącz do 142 serwerów, które już korzystają z Nyxory. Konfiguracja zajmuje mniej niż minutę.</p>
+      <a href="https://good-parks-chew.freebuff.dev/auth" class="btn btn-primary" style="padding: 12px 32px; font-size: 14px; display: inline-flex;">
+        Rozpocznij za darmo
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+      </a>
+    </section>
+
+    <div class="landing-footer">Nyxora © 2026 — Nowoczesny bot Discord</div>
+  </div>
+
+  <!-- ===== LOGIN PAGE ===== -->
+  <div class="page" id="page-login">
+    <div class="login-page">
+      <div class="login-card">
+        <div class="login-header">
+          <div class="login-logo">N</div>
+          <h2>Zaloguj się do Nyxory</h2>
+          <p>Wybierz metodę logowania</p>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <!-- REAL Discord login — redirects to Convex Auth -->
+          <a href="https://polished-badger-628.convex.cloud/api/auth/signin/discord?callbackUrl=/" class="btn" style="width:100%;justify-content:center;background:#5865F2;color:#fff;border:none;padding:12px 22px;font-size:14px;text-decoration:none;">
+            <svg viewBox="0 0 24 24" fill="currentColor" style="width:20px;height:20px;"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"></path></svg>
+            Zaloguj się przez Discord
+          </a>
+
+          <div class="login-divider">lub</div>
+
+          <a href="https://good-parks-chew.freebuff.dev/auth" class="btn btn-secondary" style="width:100%;justify-content:center;text-decoration:none;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"></path></svg>
+            Zaloguj się przez email (panel webowy)
+          </a>
+
+          <div class="login-error" id="loginError"></div>
+
+          <div class="login-back-link" style="font-size:12px;color:var(--text-tertiary);text-align:center;">
+            <button onclick="showLanding()" style="background:none;border:none;color:var(--accent);cursor:pointer;font-size:12px;font-family:inherit;text-decoration:underline;">← Powrót do strony głównej</button>
+          </div>
+        </div>
+
+        <div class="login-footer-text">
+          ⚡ Discord login przekierowuje do Convex Auth.<br>
+          Po autoryzacji wrócisz do panelu.<br><br>
+          <strong>Potrzebne:</strong> Ustaw <code style="color:var(--accent);font-size:10px;">AUTH_DISCORD_ID</code> i <code style="color:var(--accent);font-size:10px;">AUTH_DISCORD_SECRET</code> w Convex Dashboard.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== DASHBOARD PAGE ===== -->
+  <div class="page" id="page-dashboard">
+    <div class="dashboard">
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+          <div class="sidebar-header-left">
+            <div class="sidebar-logo">N</div>
+            <div class="sidebar-brand">Nyxora <span>Dashboard</span></div>
+          </div>
+          <button class="logout-btn" onclick="handleLogout()" title="Wyloguj" aria-label="Wyloguj" style="background:none;border:none;color:var(--text-tertiary);cursor:pointer;padding:4px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" x2="9" y1="12" y2="12"></line></svg>
+          </button>
+        </div>
+        <nav class="sidebar-nav">
+          <div class="nav-label">Menu</div>
+          <a class="nav-item active" data-tab="overview"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>Przegląd</a>
+          <a class="nav-item" data-tab="server"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><path d="M6 6h.01M6 18h.01"></path></svg>Wybór Serwera</a>
+          <div class="nav-label">Moduły</div>
+          <a class="nav-item" data-tab="moderation"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>Moderacja</a>
+          <a class="nav-item" data-tab="music"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>Muzyka</a>
+          <a class="nav-item" data-tab="greetings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"></path><path d="M8 17s2 2 4 2 4-2 4-2"></path></svg>Powitania</a>
+          <div class="nav-label">System</div>
+          <a class="nav-item" data-tab="logs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" x2="8" y1="13" y2="13"></line><line x1="16" x2="8" y1="17" y2="17"></line></svg>Logi</a>
+          <a class="nav-item" data-tab="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>Ustawienia</a>
+        </nav>
+        <div class="sidebar-footer">
+          <div class="user-avatar" id="dashAvatar">U</div>
+          <div class="user-info">
+            <div class="user-name" id="dashUserName">Użytkownik</div>
+            <div class="user-status" id="dashUserStatus">Administrator</div>
+          </div>
+        </div>
+      </aside>
+
+      <header class="header">
+        <div class="header-left">
+          <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle sidebar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" x2="21" y1="6" y2="6"></line><line x1="3" x2="21" y1="12" y2="12"></line><line x1="3" x2="21" y1="18" y2="18"></line></svg>
+          </button>
+          <div class="header-breadcrumb">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+            <span>Dashboard</span>
+            <span style="color:var(--text-tertiary)">/</span>
+            <span class="header-server">Oficjalny Serwer Nyxora</span>
+          </div>
+        </div>
+        <div class="header-right">
+          <div class="status-indicator"><span class="status-dot"></span>Online<span class="status-ping">• Ping: 18ms</span></div>
+          <div class="header-actions">
+            <button class="header-btn" title="Notifications" onclick="showToast(&#39;Brak nowych powiadomień.&#39;)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <main class="main">
+        <div class="tab-content active" id="tab-overview">
+          <div class="page-heading">
+            <div><h1>Przegląd</h1><p>Witaj z powrotem. Oto podsumowanie Twojego bota.</p></div>
+            <div class="page-heading-actions">
+              <button class="btn btn-secondary" onclick="showToast(&#39;Odświeżono dane.&#39;)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>Odśwież
+              </button>
+              <button class="btn btn-primary">Edytuj ustawienia</button>
+            </div>
+          </div>
+          <div class="stats-grid">
+            <div class="stat-card"><div class="stat-card-header"><span class="stat-label">Serwery</span><div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><path d="M6 6h.01M6 18h.01"></path></svg></div></div><div class="stat-value">142</div><div class="stat-change">+3 w tym tygodniu</div></div>
+            <div class="stat-card"><div class="stat-card-header"><span class="stat-label">Użytkownicy</span><div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></div></div><div class="stat-value">48,291</div><div class="stat-change">+1,024 w tym miesiącu</div></div>
+            <div class="stat-card"><div class="stat-card-header"><span class="stat-label">Komendy (dziś)</span><div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg></div></div><div class="stat-value">1,204</div><div class="stat-change">+12% vs. wczoraj</div></div>
+            <div class="stat-card"><div class="stat-card-header"><span class="stat-label">CPU / RAM</span><div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"></rect><rect x="9" y="9" width="6" height="6"></rect><path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 15h3M1 9h3M1 15h3"></path></svg></div></div><div class="stat-value">23% / 412MB</div><div class="stat-change" style="color:var(--text-tertiary)">W normie</div></div>
+          </div>
+          <div class="section">
+            <div class="section-title">Szybkie akcje</div>
+            <div class="section-desc">Włącz lub wyłącz moduły bota jednym kliknięciem.</div>
+            <div class="toggles-grid">
+              <div class="toggle-card"><div class="toggle-info"><span class="toggle-label">Anty-Link</span><span class="toggle-desc">Blokuj podejrzane linki</span></div><label class="toggle"><input type="checkbox" checked="" data-toggle="antylink"><span class="toggle-slider"></span></label></div>
+              <div class="toggle-card"><div class="toggle-info"><span class="toggle-label">System Poziomów</span><span class="toggle-desc">Rangi i exp</span></div><label class="toggle"><input type="checkbox" checked="" data-toggle="levels"><span class="toggle-slider"></span></label></div>
+              <div class="toggle-card"><div class="toggle-info"><span class="toggle-label">Ekonomia</span><span class="toggle-desc">Waluta i sklep</span></div><label class="toggle"><input type="checkbox" data-toggle="economy"><span class="toggle-slider"></span></label></div>
+              <div class="toggle-card"><div class="toggle-info"><span class="toggle-label">Auto-Moderacja</span><span class="toggle-desc">Filtrowanie</span></div><label class="toggle"><input type="checkbox" checked="" data-toggle="automod"><span class="toggle-slider"></span></label></div>
+              <div class="toggle-card"><div class="toggle-info"><span class="toggle-label">Welcome DM</span><span class="toggle-desc">PW powitalne</span></div><label class="toggle"><input type="checkbox" checked="" data-toggle="welcome"><span class="toggle-slider"></span></label></div>
+              <div class="toggle-card"><div class="toggle-info"><span class="toggle-label">Logi Aktywności</span><span class="toggle-desc">Zapis zdarzeń</span></div><label class="toggle"><input type="checkbox" checked="" data-toggle="logs"><span class="toggle-slider"></span></label></div>
+            </div>
+          </div>
+          <div class="section">
+            <div class="section-title">Konfiguracja bota</div>
+            <div class="section-desc">Podstawowe ustawienia Nyxory na tym serwerze.</div>
+            <div class="form-grid">
+              <div class="form-group"><label class="form-label" for="prefix">Prefix</label><input class="form-input" id="prefix" type="text" value="ny!"></div>
+              <div class="form-group"><label class="form-label" for="welcomeChannel">Kanał powitalny</label><select class="form-select" id="welcomeChannel"><option value="">Wybierz...</option><option value="general" selected="">#ogólny</option><option value="welcome">#powitania</option><option value="announcements">#ogłoszenia</option></select></div>
+              <div class="form-group full-width"><label class="form-label" for="welcomeMessage">Wiadomość powitalna</label><textarea class="form-textarea" id="welcomeMessage">{user} witaj na serwerze {server}! 🎉</textarea></div>
+              <div class="form-actions"><button class="btn btn-secondary" onclick="resetForm()">Przywróć</button><button class="btn btn-primary" onclick="saveConfig()">Zapisz</button></div>
+            </div>
+          </div>
+        </div>
+        <div class="tab-content" id="tab-server"><div class="page-heading"><div><h1>Wybór Serwera</h1><p>Zarządzaj botem na różnych serwerach.</p></div></div><div style="padding:40px 0;text-align:center;color:var(--text-tertiary);"><p>Wybierz serwer z listy.</p></div></div>
+        <div class="tab-content" id="tab-moderation"><div class="page-heading"><div><h1>Moderacja</h1><p>Narzędzia moderacji.</p></div></div><div style="padding:40px 0;text-align:center;color:var(--text-tertiary);"><p>Panel moderacji — wkrótce.</p></div></div>
+        <div class="tab-content" id="tab-music"><div class="page-heading"><div><h1>Muzyka</h1><p>Odtwarzanie muzyki.</p></div></div><div style="padding:40px 0;text-align:center;color:var(--text-tertiary);"><p>Panel muzyczny — wkrótce.</p></div></div>
+        <div class="tab-content" id="tab-greetings"><div class="page-heading"><div><h1>Powitania</h1><p>Konfiguracja powitań.</p></div></div><div style="padding:40px 0;text-align:center;color:var(--text-tertiary);"><p>Panel powitań — wkrótce.</p></div></div>
+        <div class="tab-content" id="tab-logs"><div class="page-heading"><div><h1>Logi</h1><p>Logi aktywności.</p></div></div><div style="padding:40px 0;text-align:center;color:var(--text-tertiary);"><p>Panel logów — wkrótce.</p></div></div>
+        <div class="tab-content" id="tab-settings"><div class="page-heading"><div><h1>Ustawienia</h1><p>Ustawienia konta.</p></div></div><div style="padding:40px 0;text-align:center;color:var(--text-tertiary);"><p>Ustawienia — wkrótce.</p></div></div>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      'use strict';
+
+      function showPage(pageId) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        const p = document.getElementById(pageId);
+        if (p) p.classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      window.scrollTo = function(id) {
+        const el = document.getElementById(id);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      };
+
+      window.showLanding = function() { showPage('page-landing'); };
+      window.showLogin = function() { showPage('page-login'); };
+
+      // ── Check if user came back from Discord auth ──
+      // If URL has ?session or we detect Convex auth cookie, go to dashboard
+      function checkAuth() {
+        const params = new URLSearchParams(window.location.search);
+        if (params.has('session') || document.cookie.includes('__convex-auth')) {
+          showPage('page-dashboard');
+        }
+      }
+
+      // ── Dashboard tab switching ──
+      const navItems = document.querySelectorAll('#page-dashboard .nav-item');
+      const tabContents = document.querySelectorAll('#page-dashboard .tab-content');
+      function switchTab(tabId) {
+        navItems.forEach(i => i.classList.remove('active'));
+        tabContents.forEach(t => t.classList.remove('active'));
+        const n = document.querySelector('#page-dashboard .nav-item[data-tab="'+tabId+'"]');
+        if (n) n.classList.add('active');
+        const t = document.getElementById('tab-'+tabId);
+        if (t) t.classList.add('active');
+      }
+      navItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+          e.preventDefault();
+          switchTab(this.getAttribute('data-tab'));
+          document.getElementById('sidebar')?.classList.remove('open');
+        });
+      });
+
+      // ── Mobile sidebar ──
+      document.getElementById('mobileToggle')?.addEventListener('click', function() {
+        document.getElementById('sidebar')?.classList.toggle('open');
+      });
+      document.addEventListener('click', function(e) {
+        if (window.innerWidth <= 768) {
+          const s = document.getElementById('sidebar');
+          const t = document.getElementById('mobileToggle');
+          if (s && t && !s.contains(e.target) && !t.contains(e.target) && s.classList.contains('open')) {
+            s.classList.remove('open');
+          }
+        }
+      });
+
+      // ── Toggles ──
+      document.querySelectorAll('#page-dashboard .toggle input[type="checkbox"]').forEach(toggle => {
+        toggle.addEventListener('change', function() {
+          const name = this.getAttribute('data-toggle') || 'Moduł';
+          const state = this.checked ? 'włączony' : 'wyłączony';
+          showToast(capitalize(name)+' — '+state);
+        });
+      });
+      function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1).replace(/-/g, ' '); }
+
+      // ── Toast ──
+      function showToast(msg) {
+        document.querySelector('.toast')?.remove();
+        const t = document.createElement('div');
+        t.className = 'toast';
+        t.textContent = msg;
+        document.body.appendChild(t);
+        requestAnimationFrame(() => t.classList.add('visible'));
+        setTimeout(() => { t.classList.remove('visible'); setTimeout(() => t.remove(), 250); }, 2500);
+      }
+      window.showToast = showToast;
+
+      // ── Form ──
+      window.saveConfig = function() { showToast('✅ Konfiguracja zapisana.'); };
+      window.resetForm = function() {
+        document.getElementById('prefix').value = 'ny!';
+        document.getElementById('welcomeChannel').value = 'general';
+        document.getElementById('welcomeMessage').value = '{user} witaj na serwerze {server}! 🎉';
+        showToast('Przywrócono domyślne.');
+      };
+
+      // ── Logout ──
+      window.handleLogout = function() {
+        showToast('Wylogowano.');
+        showPage('page-landing');
+      };
+
+      // ── Escape closes toast ──
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+          const t = document.querySelector('.toast');
+          if (t) { t.classList.remove('visible'); setTimeout(() => t.remove(), 250); }
+        }
+      });
+
+      // ── Init ──
+      checkAuth();
+      if (!document.querySelector('.page.active')) {
+        showPage('page-landing');
+      }
+    })();
+  </script>
+
+
+</body></html>
